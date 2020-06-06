@@ -102,18 +102,19 @@ namespace GeomCalculator
             }
 
             int type = figureTypes[comboBox1.SelectedIndex];
+            
+            
             Figure figure = new Figure();
             figure.init(type, a, b, x, y);
-            
-            textBox3.Text = figure.getP().ToString();
-            textBox4.Text = figure.getS().ToString();
-            textBox5.Text = "(" + figure.getX().ToString() + ", " + figure.getY().ToString() + ")";
 
-            if (type == 0)
-            { 
-                textBox6.Text = figure.getR().ToString();
+            if (backgroundWorker1.IsBusy)
+            {
+                MessageBox.Show("Вычисления в процессе");
+
+                return;
             }
 
+            backgroundWorker1.RunWorkerAsync(figure);
         }
 
         private void coordinatesY_KeyPress(object sender, KeyPressEventArgs e)
@@ -127,21 +128,15 @@ namespace GeomCalculator
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-            int i;
-            i = int.Parse(e.Argument.ToString()); for (int j = 1; j <= i; j++)
-            {
-                if (backgroundWorker1.CancellationPending)
-                {
-                    e.Cancel = true; return;
-                }
-                System.Threading.Thread.Sleep(1000); backgroundWorker1.ReportProgress((int)(j * 100 / i));
-            }
+            Figure figure = (Figure)e.Argument;
 
+            figure.doHeavyComputation();
+
+            e.Result = figure;
         }
 
         private void clearButton_Click(object sender, EventArgs e)
         {
-
             baseBox.Clear();
             heightBox.Clear();
             coordinatesX.Clear();
@@ -151,9 +146,20 @@ namespace GeomCalculator
             textBox5.Clear();
             textBox6.Clear();
             comboBox1.SelectedIndex = -1;
+        }
 
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            Figure figure = (Figure)e.Result;
 
+            textBox3.Text = figure.getP().ToString();
+            textBox4.Text = figure.getS().ToString();
+            textBox5.Text = "(" + figure.getX().ToString() + ", " + figure.getY().ToString() + ")";
 
+            if (figure.getType() == 0)
+            {
+                textBox6.Text = figure.getR().ToString();
+            }
         }
     }
 }

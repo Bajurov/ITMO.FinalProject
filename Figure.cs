@@ -28,6 +28,11 @@ namespace NewProject
             this.y = y;
         }
 
+        public int getType()
+        {
+            return type;
+        }
+
         public double getR()
         {
             return a;
@@ -110,6 +115,11 @@ namespace NewProject
             Console.WriteLine("P = " + getP());
             Console.WriteLine("S = " + getS());
             Console.WriteLine("Centre is in [" + getX() + ":" + getY() + "]");
+        }
+
+        public void doHeavyComputation()
+        {
+            System.Threading.Thread.Sleep(1000);
         }
     }
 }
